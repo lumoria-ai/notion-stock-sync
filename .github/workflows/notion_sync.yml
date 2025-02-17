@@ -1,0 +1,28 @@
+name: Run Notion Stock Sync
+
+on:
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+  repository_dispatch:  # Allows external triggers (e.g., from Notion)
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: pip install requests
+
+      - name: Run Notion Sync Script
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          DATABASE_ID: ${{ secrets.DATABASE_ID }}
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+        run: python notion_sync.py
