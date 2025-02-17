@@ -6,12 +6,28 @@ import time
 NOTION_API_KEY = os.getenv("NOTION_API_KEY")
 DATABASE_ID = os.getenv("DATABASE_ID")
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
+PERSONAL_TOKEN = os.getenv("GITHUB_TOKEN")
+GITHUB_REPO = "lumoria-ai/notion-stock-sync"
 
 HEADERS = {
     "Authorization": f"Bearer {NOTION_API_KEY}",
     "Content-Type": "application/json",
     "Notion-Version": "2022-06-28",
 }
+def trigger_github_action():
+    """Trigger GitHub Actions to run the script."""
+    url = f"https://api.github.com/repos/{GITHUB_REPO}/actions/workflows/notion_sync.yml/dispatches"
+    headers = {
+        "Authorization": f"Bearer {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+    payload = {"ref": "main"}
+
+    response = requests.post(url, headers=headers, json=payload)
+    if response.status_code == 204:
+        print("GitHub Action triggered successfully!")
+    else:
+        print("Failed to trigger GitHub Action:", response.text)
 
 def get_notion_database_entries():
     url = f"https://api.notion.com/v1/databases/{DATABASE_ID}/query"
